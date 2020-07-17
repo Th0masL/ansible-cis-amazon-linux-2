@@ -11,7 +11,7 @@
     src: "{{item.device}}"
     opts: "{{item.opts}}"
   with_items:
-    - "{{ fs_mounts | selectattr('mountpoint', 'equalto', '/var') | list }}"
+    - { mountpoint: "{{cis_partition_mnt_val_var}}", device: "{{cis_partition_dev_val_var}}", fstype: "{{cis_partition_fs_val_var}}", opts: "{{cis_partition_opts_val_var}}" }
   tags:
       - level-1
       - section-1
