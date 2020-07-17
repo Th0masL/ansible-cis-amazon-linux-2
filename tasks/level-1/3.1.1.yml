@@ -8,6 +8,7 @@
     name: net.ipv4.ip_forward
     value: "0"
     state: present
+    ignoreerrors: yes
   tags:
     - level-1
     - section-3
@@ -19,6 +20,7 @@
     name: net.ipv6.conf.all.forwarding
     value: "0"
     state: present
+    ignoreerrors: yes
   tags:
     - level-1
     - section-3
@@ -27,6 +29,7 @@
 
 - name: 3.1.1 - Ensure IP forwarding is disabled in active kernel parameters
   command: "{{ item }}"
+  ignore_errors: true
   with_items:
     - "sysctl -w net.ipv4.ip_forward=0"
     - "sysctl -w net.ipv4.route.flush=1"
