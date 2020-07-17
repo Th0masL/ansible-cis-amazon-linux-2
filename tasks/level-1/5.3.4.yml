@@ -8,9 +8,8 @@
     type: password
     control: sufficient
     module_path: pam_unix.so
-    new_control: sufficient
     module_arguments: sha512
-    state: updated
+    state: args_present
   tags:
     - level-1
     - section-5
@@ -23,9 +22,8 @@
     type: password
     control: sufficient
     module_path: pam_unix.so
-    new_control: sufficient
     module_arguments: sha512
-    state: updated
+    state: args_present
   tags:
     - level-1
     - section-5
