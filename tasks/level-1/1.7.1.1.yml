@@ -39,12 +39,17 @@
   copy:
     dest: "/var/lib/update-motd/motd"
     content: "{{ cis_local_login_warning_banner }}"
-  when: var_lib_updatemotd_motd.exists is defined and var_lib_updatemotd_motd.exists == True
+  when: var_lib_updatemotd_motd.stat.exists is defined and var_lib_updatemotd_motd.stat.exists == True
   tags:
     - level-1
     - 1.7.1.1
     - scored
 
+- name: "1.7.1.1 - Create the file /var/lib/update-motd/disabled to make sure that Amazon's /usr/sbin/update-motd script does not recreate the motd"
+  file:
+    path: /var/lib/update-motd/disabled
+    state: touch
+    
 - name: 1.7.1.1 - Ensure message of the day is configured properly
   command: /usr/sbin/update-motd
   tags:
