@@ -48,7 +48,7 @@ cis_partition_opts_val_tmp: "rw,nosuid,nodev,noexec,relatime"
 cis_partition_dev_val_var: "/dev/xvda4"
 cis_partition_mnt_val_var: "/var"
 cis_partition_fs_val_var: "ext4"
-cis_partition_opts_val_var: "default,noatime"
+cis_partition_opts_val_var: "defaults,noatime"
 
 cis_partition_dev_val_log: "/dev/xvda5"
 cis_partition_mnt_val_log: "/var/log"
