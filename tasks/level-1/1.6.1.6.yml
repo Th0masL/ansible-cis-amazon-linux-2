@@ -3,6 +3,9 @@
 
 # 1.6.1.6 Ensure no unconfined daemons exist (Scored)
 
+# To show unconfined daemons, run the following command :
+# ps -eZ | egrep "initrc" | egrep -vw "tr|ps|egrep|bash|awk" | tr ':' ' ' | awk '{ print $NF }'
+
 - name: 1.6.1.6 Ensure no unconfined daemons exist (Scored)
   script: "{{ role_path }}/files/audit_1.6.1.6.sh"
   check_mode: no

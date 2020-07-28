@@ -1,7 +1,7 @@
 # Standards: 0.11
 ---
 
-# 1.1.2 Ensure separate partition exists for /tmp (Scored)
+# 1.1.2 - Ensure separate partition exists for /tmp (Scored)
 
 - name: 1.1.2 - Ensure separate partition exists for /tmp (Scored)
   mount:
@@ -11,7 +11,7 @@
     src: "{{item.device}}"
     opts: "{{item.opts}}"
   with_items:
-    - "{{ fs_mounts | selectattr('mountpoint', 'equalto', '/tmp') | list }}"
+    - { mountpoint: "{{cis_partition_mnt_val_tmp}}", device: "{{cis_partition_dev_val_tmp}}", fstype: "{{cis_partition_fs_val_tmp}}", opts: "{{cis_partition_opts_val_tmp}}" }
   tags:
       - level-1
       - section-1

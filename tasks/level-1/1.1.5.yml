@@ -3,15 +3,18 @@
 
 # 1.1.5 Ensure noexec option set on /tmp partition
 
+- name: regather facts
+  setup:
+
 - name: 1.1.5 - Ensure noexec option set on /tmp partition
   mount:
-    name: "{{ item.mountpoint }}"
+    name: "{{ item.mount }}"
     state: mounted
     fstype: "{{ item.fstype }}"
     src: "{{ item.device }}"
-    opts: "{{ item.opts.split(',') | union(['noexec']) | join(',') }}"
-  with_items: 
-    - "{{ fs_mounts | selectattr('mountpoint', 'equalto', '/tmp') | list }}"
+    opts: "{{ item.options.split(',') | union(['noexec']) | join(',') }}"
+  when: item.mount == '/tmp'
+  with_items: "{{ ansible_local.all_mounts }}"
   tags:
     - level-1
     - section-1

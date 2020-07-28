@@ -3,8 +3,129 @@
 
 # 4.2.4 Ensure permissions on all logfiles are configured
 
+# For troubleshooting purposes, you can use the following command to show the files and their permissions :
+# find -L /var/log -type f -printf ""%M" "%p\\n
+
 - name: 4.2.4 - Ensure permissions on all logfiles are configured
-  shell: "find /var/log -type f -exec chmod g-wx,o-rwx {} +"
+  shell: "find -L /var/log -type f -exec chmod g-wx,o-rwx {} +"
+  tags:
+    - level-1
+    - section-4
+    - "4.2.4"
+    - scored
+
+- name: 4.2.4 - Check if the file /usr/lib/systemd/system/rhel-dmesg.service exists or not
+  stat:
+    path: /usr/lib/systemd/system/rhel-dmesg.service
+  register: usr_lib_systemd_dmesg
+  tags:
+    - level-1
+    - section-4
+    - "4.2.4"
+    - scored
+
+- name: 4.2.4 - Copy the file /usr/lib/systemd/system/rhel-dmesg.service to /etc/systemd/system/rhel-dmesg.service
+  copy:
+    src: /usr/lib/systemd/system/rhel-dmesg.service
+    dest: /etc/systemd/system/rhel-dmesg.service
+    remote_src: yes
+  when: usr_lib_systemd_dmesg.stat.exists is defined and usr_lib_systemd_dmesg.stat.exists == True
+  tags:
+    - level-1
+    - section-4
+    - "4.2.4"
+    - scored
+
+- name: 4.2.4 - Add UMask with value 0077 in /etc/systemd/system/rhel-dmesg.service
+  ini_file:
+    path: /etc/systemd/system/rhel-dmesg.service
+    section: Service
+    option: UMask
+    value: "0077"
+    no_extra_spaces: yes
+  when: usr_lib_systemd_dmesg.stat.exists is defined and usr_lib_systemd_dmesg.stat.exists == True
+  tags:
+    - level-1
+    - section-4
+    - "4.2.4"
+    - scored
+
+- name: 4.2.4 - Check if the file /usr/lib/tmpfiles.d/var.conf exists or not
+  stat:
+    path: /usr/lib/tmpfiles.d/var.conf
+  register: usr_lib_tmpfiles_varconf
+  tags:
+    - level-1
+    - section-4
+    - "4.2.4"
+    - scored
+
+- name: 4.2.4 - Copy the file /usr/lib/tmpfiles.d/var.conf to /etc/tmpfiles.d/var.conf
+  copy:
+    src: /usr/lib/tmpfiles.d/var.conf
+    dest: /etc/tmpfiles.d/var.conf
+    remote_src: yes
+  when: usr_lib_tmpfiles_varconf.stat.exists is defined and usr_lib_tmpfiles_varconf.stat.exists == True
+  tags:
+    - level-1
+    - section-4
+    - "4.2.4"
+    - scored
+
+- name: 4.2.4 - Change the permission of /var/log/wtmp folder to 0640 in /etc/tmpfiles.d/var.conf
+  replace:
+    path: /etc/tmpfiles.d/var.conf
+    regexp: "/var/log/wtmp 0664"
+    replace: "/var/log/wtmp 0640"
+  when: usr_lib_tmpfiles_varconf.stat.exists is defined and usr_lib_tmpfiles_varconf.stat.exists == True
+  tags:
+    - level-1
+    - section-4
+    - "4.2.4"
+    - scored
+
+- name: 4.2.4 - Check if the file /usr/lib/systemd/system/rhel-dmesg.service exists or not
+  stat:
+    path: /usr/lib/systemd/system/cloud-init.service
+  register: usr_lib_systemd_cloudinit
+  tags:
+    - level-1
+    - section-4
+    - "4.2.4"
+    - scored
+
+- name: 4.2.4 - Create an /etc/systemd service file to fix the permissions on cloud-init.log
+  copy:
+    dest: /etc/systemd/system/cloud-init-log-permissions.service
+    content: |
+      [Unit]
+      Description=Correct cloud-init's logfile permissions
+      # We want to start *AFTER* cloud-init has opened its log files:
+      After=cloud-init.service
+      # We want to restart any time cloud-init is restarted (requires RemainAfterExit below):
+      PartOf=cloud-init.service
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/usr/bin/chmod u=rw,g=r,o= /var/log/cloud-init.log /var/log/cloud-init-output.log
+
+      [Install]
+      WantedBy=multi-user.target
+  when: usr_lib_systemd_cloudinit.stat.exists is defined and usr_lib_systemd_cloudinit.stat.exists == True
+  tags:
+    - level-1
+    - section-4
+    - "4.2.4"
+    - scored
+
+- name: 4.2.4 - Enable the service cloud-init-log-permissions
+  systemd:
+    name: cloud-init-log-permissions
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  when: usr_lib_systemd_cloudinit.stat.exists is defined and usr_lib_systemd_cloudinit.stat.exists == True
   tags:
     - level-1
     - section-4
